@@ -20,6 +20,8 @@ public class Jugador : MonoBehaviour
 
     public Estadísticas est;
 
+    private float segundosCooldownEnergía = 0;
+
     private void Start()
     {
         velocidadInicial = est.velocidadJ;
@@ -54,14 +56,28 @@ public class Jugador : MonoBehaviour
 
         // Correr
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        segundosCooldownEnergía += Time.deltaTime;
+
+        Debug.Log(segundosCooldownEnergía);
+        //Debug.Log(Time.time);
+
+        if (Input.GetKey(KeyCode.LeftShift) && est.energíaJ > 0)
         {
             est.velocidadJ = velocidadInicial * 2;
+            segundosCooldownEnergía = 0;
+            est.energíaJ -= .33f;
         }
         else
         {
             est.velocidadJ = velocidadInicial;
+
+            if (segundosCooldownEnergía >= est.cooldownEnergíaJ)
+            {
+                est.energíaJ += .175f;
+            }
         }
+
+        Debug.Log(est.velocidadJ);
 
         // Raycast
 
@@ -87,10 +103,5 @@ public class Jugador : MonoBehaviour
                 Debug.Log("Golpeo otra cosa");
             }
         }
-    }
-
-    private void FixedUpdate()
-    {
-        
     }
 }
