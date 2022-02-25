@@ -13,6 +13,7 @@ public class Estadísticas : MonoBehaviour
     public float dañoJ;
     public float rangoJ;
     public float municionJ;
+    public float cooldownAtaqueJ;
     public float energíaJ;
     public float cooldownEnergíaJ;
 
@@ -25,38 +26,7 @@ public class Estadísticas : MonoBehaviour
     public float velocidadZ;
     public float dañoZ;
     public float rangoZ;
-
-
-    //public float vidaZR;
-    /*
-    [Serializable]
-    public class Jugador
-    {
-        public float vida;
-        public float velocidad;
-        public float daño;
-        public float municionRest;
-        public float energíaRest;
-    }
-    
-    [Serializable]
-    public class Zombie
-    {
-        public float vida;
-        public float velocidad;
-        public float daño;
-        public bool tieneArma;
-    }
-    
-    public class ZRapido : Zombie
-    {
-        new public float velocidad; 
-    }
-
-    [SerializeField] private Jugador EstadísticasJugador;
-    [SerializeField] private Zombie EstadísticasZombie;
-    [SerializeField] private Zombie EstadísticasZRapido;
-    */
+    public float cooldownAtaqueZ;
 
     void Start()
     {
@@ -65,24 +35,11 @@ public class Estadísticas : MonoBehaviour
 
     void Update()
     {
-        // Actualizar salud
-        if (vidaJ <= 0)
-        {
-            vidaJ = 0;
-        }
-
+        // Actualizar salud en HUD
+        
         textoVidaJ.text = "Salud: " + vidaJ.ToString();
 
-        // Actualizar estamina
-        /*
-        if (energíaJ <= 0)
-        {
-            energíaJ = 0;
-        }
-        else */if (energíaJ >= 100)
-        {
-            energíaJ = 100;
-        }
+        // Actualizar estamina en HUD
 
         textoEnergiaJ.text = "Estamina: " + Mathf.Round(energíaJ).ToString();
     }

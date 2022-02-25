@@ -10,11 +10,17 @@ public class Zombie : MonoBehaviour
     public Transform jugador;
 
     public Estadísticas est;
+    public FieldOfView fovLejos;
+    public FieldOfView fovCerca;
+    public FieldOfView fovJugDetectado;
 
     [System.NonSerialized] public float vidaZ;
     [System.NonSerialized] public float velocidadZ;
     [System.NonSerialized] public float dañoZ;
     [System.NonSerialized] public float rangoZ;
+
+    private float segundosCooldownAtaque;
+    private float velocidadOriginal;
 
     private void Awake()
     {
@@ -24,49 +30,49 @@ public class Zombie : MonoBehaviour
         rangoZ = est.rangoZ;
 
         agente.speed *= velocidadZ;
+        velocidadOriginal = agente.speed;
     }
 
     private void Update()
     {
+        // Dirección del zombie
+
         Vector3 gps = jugador.position;
-        //float distanciaX = gameObject.transform.position.x - gps.x;
-        //float distanciaY = gameObject.transform.position.y - gps.y;
+
         agente.SetDestination(gps);
 
-        float distanciaXZ = Vector3.Distance(new Vector3(gps.x, 0, gps.z), new Vector3(gameObject.transform.position.x, 0, gameObject.transform.position.z));
-        //float distanciaY = Vector3.Distance(new Vector3(0, gameObject.transform.position.y, 0), new Vector3(0, gps.y, 0));
-
-        /*
-        if (distanciaX > rangoZ && !Mathf.Approximately(distanciaY, 0))
-        if (distanciaX > rangoZ && !Mathf.Approximately(distanciaY, 0))
-        {
-            Debug.Log(distanciaX);
-            agente.isStopped = false;
-        }
-        else
-        {
-            Debug.Log("Cerca");
-            agente.isStopped = true;
-        }
-        NavMeshHit navMeshHit;
-        if (NavMesh.SamplePosition(agente.transform.position, out navMeshHit, 1f, NavMesh.AllAreas))
-        {
-            agente.isStopped = false;
-            agente.SetDestination(gps);
-            Debug.Log(navMeshHit.mask + " " + gameObject.name);
-        }
-        */
+        float distancia = Vector3.Distance(gps, gameObject.transform.position);
 
         // Ataque del zombie
 
-        if (distanciaXZ <= rangoZ)
+        segundosCooldownAtaque += Time.deltaTime;
+
+        if (fovCerca.canSeePlayer == false && fovLejos.canSeePlayer == false && fovJugDetectado.canSeePlayer == false)
         {
-            est.vidaJ -= est.dañoZ;
+            //agente.speed = velocidadOriginal;
             agente.isStopped = true;
+            fovJugDetectado.enabled = false;
         }
-        else
+
+        if (distancia <= rangoZ && segundosCooldownAtaque >= est.cooldownAtaqueZ && (fovCerca.canSeePlayer == true || fovLejos.canSeePlayer == true || fovJugDetectado == true))
+        {
+            segundosCooldownAtaque = 0;
+
+            if (est.vidaJ >= 0)
+            {
+                est.vidaJ -= est.dañoZ;
+            }
+        }
+        else if (fovCerca.canSeePlayer == true || fovLejos.canSeePlayer == true)
         {
             agente.isStopped = false;
+            agente.speed = velocidadOriginal;
+            fovJugDetectado.enabled = true;
+        }
+
+        if (distancia <= rangoZ)
+        {
+            agente.speed = 0;
         }
 
         //Debug.Log("Estadísticas Zombie Normal: " + vidaZ + " " + velocidadZ + " " + dañoZ + " " + tieneArmaZ);

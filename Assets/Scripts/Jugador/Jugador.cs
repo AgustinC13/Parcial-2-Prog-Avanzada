@@ -9,6 +9,7 @@ public class Jugador : MonoBehaviour
     public Camera Camara;
 
     private float velocidadInicial;
+    private float energíaInicial;
     public float gravedad = -9.81f;
     public Vector3 direccion;
 
@@ -21,10 +22,12 @@ public class Jugador : MonoBehaviour
     public Estadísticas est;
 
     private float segundosCooldownEnergía = 0;
+    private float segundosCooldownDisparo = 0;
 
     private void Start()
     {
         velocidadInicial = est.velocidadJ;
+        energíaInicial = est.energíaJ;
     }
 
     void Update()
@@ -58,9 +61,6 @@ public class Jugador : MonoBehaviour
 
         segundosCooldownEnergía += Time.deltaTime;
 
-        Debug.Log(segundosCooldownEnergía);
-        //Debug.Log(Time.time);
-
         if (Input.GetKey(KeyCode.LeftShift) && est.energíaJ > 0)
         {
             est.velocidadJ = velocidadInicial * 2;
@@ -77,14 +77,28 @@ public class Jugador : MonoBehaviour
             }
         }
 
-        Debug.Log(est.velocidadJ);
+        // Limitar estadísticas
 
-        // Raycast
+        if (est.vidaJ <= 0)
+        {
+            est.vidaJ = 0;
+        }
+
+        if (est.energíaJ > energíaInicial)
+        {
+            est.energíaJ = energíaInicial;
+        }
+
+        // Raycast (Disparo)
 
         RaycastHit hit;
 
-        if (Input.GetMouseButtonDown(0))
+        segundosCooldownDisparo += Time.deltaTime;
+
+        if (Input.GetMouseButtonDown(0) && segundosCooldownDisparo >= est.cooldownAtaqueJ)
         {
+            segundosCooldownDisparo = 0;
+
             if (Physics.Raycast(Camara.gameObject.transform.position, Camara.gameObject.transform.TransformDirection(Vector3.forward), out hit, est.rangoJ, capaEnemigos))
             {
                 Debug.DrawRay(Camara.gameObject.transform.position, Camara.gameObject.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
