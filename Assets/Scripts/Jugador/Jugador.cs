@@ -7,6 +7,7 @@ public class Jugador : MonoBehaviour
 {
     public CharacterController CharCont;
     public Camera Camara;
+    public Animator animator;
 
     private float velocidadInicial;
     private float energíaInicial;
@@ -41,6 +42,7 @@ public class Jugador : MonoBehaviour
             direccion.y = -2f;
         }
 
+
         /*
         if (Input.GetButtonDown("Jump") && tocaPiso)
         {
@@ -52,6 +54,15 @@ public class Jugador : MonoBehaviour
 
         Vector3 mover = transform.right * x + transform.forward * z;
         CharCont.Move(mover * est.velocidadJ * Time.deltaTime);
+
+        if ((x != 0 || z != 0) && est.velocidadJ == 3)
+        {
+            animator.SetInteger("SUPERESTADO", 1);
+        }
+        else if (x == 0 && z == 0)
+        {
+            animator.SetInteger("SUPERESTADO", 0);
+        }
 
 
         direccion.y += gravedad * Time.deltaTime;
@@ -66,8 +77,10 @@ public class Jugador : MonoBehaviour
             est.velocidadJ = velocidadInicial * 2;
             segundosCooldownEnergía = 0;
             est.energíaJ -= .33f;
+            
+            animator.SetInteger("SUPERESTADO", 2);
         }
-        else
+        else //if (est.energíaJ <= 0)
         {
             est.velocidadJ = velocidadInicial;
 
@@ -75,6 +88,8 @@ public class Jugador : MonoBehaviour
             {
                 est.energíaJ += .175f;
             }
+
+           // animator.SetInteger("SUPERESTADO", 0);
         }
 
         // Limitar estadísticas
@@ -113,6 +128,7 @@ public class Jugador : MonoBehaviour
             }
             else
             {
+
                 Debug.DrawRay(Camara.gameObject.transform.position, Camara.gameObject.transform.TransformDirection(Vector3.forward) * 1000, Color.white);
                 Debug.Log("Golpeo otra cosa");
             }
