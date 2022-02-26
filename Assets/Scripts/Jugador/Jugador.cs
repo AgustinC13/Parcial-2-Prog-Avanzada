@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Jugador : MonoBehaviour
 {
@@ -25,10 +26,15 @@ public class Jugador : MonoBehaviour
     private float segundosCooldownEnergía = 0;
     private float segundosCooldownDisparo = 0;
 
+    public GameObject menuPausa;
+
     private void Start()
     {
         velocidadInicial = est.velocidadJ;
         energíaInicial = est.energíaJ;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -133,5 +139,41 @@ public class Jugador : MonoBehaviour
                 Debug.Log("Golpeo otra cosa");
             }
         }
+
+        // Pausar
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            MenuPausaDerrota();
+
+            menuPausa.transform.GetChild(0).GetComponent<Text>().text = "Pausa";
+        }
+
+        // Perder
+
+        if (est.vidaJ <= 0)
+        {
+            MenuPausaDerrota();
+
+            menuPausa.transform.GetChild(0).GetComponent<Text>().text = "Te han matado...";
+
+            menuPausa.transform.GetChild(1).gameObject.SetActive(false);
+            menuPausa.transform.GetChild(2).GetComponent<RectTransform>().position = new Vector2(960, 540);
+            menuPausa.transform.GetChild(3).GetComponent<RectTransform>().position = new Vector2(960, 360);
+        }
+    }
+
+    // Menu al pausar o perder
+
+    void MenuPausaDerrota()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        menuPausa.SetActive(true);
+
+        Time.timeScale = 0;
+
+        this.enabled = false;
     }
 }
