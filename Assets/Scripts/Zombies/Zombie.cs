@@ -8,6 +8,7 @@ public class Zombie : MonoBehaviour
 {
     public NavMeshAgent agente;
     public Transform jugador;
+    public Animator animator;
 
     public Estadísticas est;
     public FieldOfView fovLejos;
@@ -43,6 +44,8 @@ public class Zombie : MonoBehaviour
 
         float distancia = Vector3.Distance(gps, gameObject.transform.position);
 
+
+
         // Ataque del zombie
 
         segundosCooldownAtaque += Time.deltaTime;
@@ -54,20 +57,34 @@ public class Zombie : MonoBehaviour
             fovJugDetectado.enabled = false;
         }
 
+
         if (distancia <= rangoZ && segundosCooldownAtaque >= est.cooldownAtaqueZ && (fovCerca.canSeePlayer == true || fovLejos.canSeePlayer == true || fovJugDetectado == true))
         {
             segundosCooldownAtaque = 0;
 
             if (est.vidaJ >= 0)
             {
+
                 est.vidaJ -= est.dañoZ;
+
             }
+
+             animator.SetInteger("SUPERESTADO", 2);
+
         }
-        else if (fovCerca.canSeePlayer == true || fovLejos.canSeePlayer == true)
+        else //if (fovCerca.canSeePlayer == true || fovLejos.canSeePlayer == true)
         {
             agente.isStopped = false;
             agente.speed = velocidadOriginal;
             fovJugDetectado.enabled = true;
+
+
+            if (distancia > rangoZ)
+            {
+                animator.SetInteger("SUPERESTADO", 1);
+            }
+
+
         }
 
         if (distancia <= rangoZ)

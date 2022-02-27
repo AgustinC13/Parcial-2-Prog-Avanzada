@@ -11507,6 +11507,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agente: {fileID: 382843052}
   jugador: {fileID: 516261470}
+  animator: {fileID: 551518020}
   est: {fileID: 221104491}
   fovLejos: {fileID: 0}
   fovCerca: {fileID: 0}
@@ -22757,6 +22758,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agente: {fileID: 877627166}
   jugador: {fileID: 516261470}
+  animator: {fileID: 1870391128}
   est: {fileID: 221104491}
   fovLejos: {fileID: 0}
   fovCerca: {fileID: 0}
@@ -30721,6 +30723,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agente: {fileID: 1140516008}
   jugador: {fileID: 516261470}
+  animator: {fileID: 1038372381}
   est: {fileID: 221104491}
   fovLejos: {fileID: 1140516004}
   fovCerca: {fileID: 1140516009}
@@ -43168,6 +43171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agente: {fileID: 1632066445}
   jugador: {fileID: 516261470}
+  animator: {fileID: 1930268668}
   est: {fileID: 221104491}
   fovLejos: {fileID: 0}
   fovCerca: {fileID: 0}
