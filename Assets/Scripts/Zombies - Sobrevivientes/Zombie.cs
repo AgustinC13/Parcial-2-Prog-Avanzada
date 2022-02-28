@@ -19,9 +19,9 @@ public class Zombie : MonoBehaviour
     [System.NonSerialized] public float velocidadZ;
     [System.NonSerialized] public float dañoZ;
     [System.NonSerialized] public float rangoZ;
-
-    private float segundosCooldownAtaque;
-    private float velocidadOriginal;
+    [System.NonSerialized] public float CooldownAtaque;
+    [System.NonSerialized] public float velocidadOriginal;
+    [System.NonSerialized] public float segundosCooldownAtaque;
 
     private void Awake()
     {
@@ -29,6 +29,7 @@ public class Zombie : MonoBehaviour
         velocidadZ = est.velocidadZ;
         dañoZ = est.dañoZ;
         rangoZ = est.rangoZ;
+        CooldownAtaque = est.cooldownAtaqueZ;
 
         agente.speed *= velocidadZ;
         velocidadOriginal = agente.speed;
@@ -72,8 +73,12 @@ public class Zombie : MonoBehaviour
                 if (distancia <= rangoZ && (fovCerca.canSeePlayer == true || fovLejos.canSeePlayer == true || fovJugDetectado == true))
                 {
                     animator.SetInteger("SUPERESTADO", 2);
+                    
+                    agente.isStopped = true;
 
-                    if (segundosCooldownAtaque >= est.cooldownAtaqueZ)
+                    //transform.LookAt(jugador);
+
+                    if (segundosCooldownAtaque >= CooldownAtaque)
                     {
                         segundosCooldownAtaque = 0;
 

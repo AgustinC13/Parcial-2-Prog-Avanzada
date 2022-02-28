@@ -6,8 +6,13 @@ public class ZAlargado : Zombie
 {
     private void Start()
     {
-        agente.speed *= velocidadZ * 0.75f;
+        float multiplicadorVelocidad = 0.75f;
+
+        agente.speed *= velocidadZ * multiplicadorVelocidad;
+        velocidadOriginal = agente.speed;
         vidaZ *= 0.75f;
         rangoZ *= 1.75f;
+        CooldownAtaque /= velocidadZ * multiplicadorVelocidad;
+        animator.speed *= velocidadZ * multiplicadorVelocidad;
     }
 }

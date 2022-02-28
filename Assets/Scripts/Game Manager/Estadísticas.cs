@@ -32,11 +32,6 @@ public class Estadísticas : MonoBehaviour
     public float velocidadS;
     public float rangoS;
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         // Actualizar salud en HUD

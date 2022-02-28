@@ -6,7 +6,13 @@ public class ZGordo : Zombie
 {
     private void Start()
     {
-        agente.speed *= velocidadZ * 0.75f;
+        float multiplicadorVelocidad = 0.75f;
+
+        agente.speed *= velocidadZ * multiplicadorVelocidad;
+        velocidadOriginal = agente.speed;
         vidaZ *= 2f;
+        rangoZ *= 1.4f;
+        CooldownAtaque /= velocidadZ * multiplicadorVelocidad;
+        animator.speed *= velocidadZ * multiplicadorVelocidad;
     }
 }
