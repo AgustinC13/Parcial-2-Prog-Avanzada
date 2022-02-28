@@ -58,14 +58,17 @@ public class Sobreviviente : MonoBehaviour
             if (distancia <= rangoS && Input.GetKeyDown(KeyCode.E))
             {
                 siendoRescatado = true;
-            }
+
+              //  animator.SetInteger("SUPERESTADO", 1);
+
+        }
 
             if (siendoRescatado == true && distancia > rangoS)
             {
                 agente.isStopped = false;
                 agente.speed = velocidadOriginal;
 
-                animator.SetInteger("SUPERESTADO", 1);
+               animator.SetInteger("SUPERESTADO", 1);
             }
 
             jugador.GetComponent<Jugador>().segundosCooldownEnergía += Time.deltaTime;
@@ -74,7 +77,7 @@ public class Sobreviviente : MonoBehaviour
             {
                 velocidadS = velocidadOriginal * 2;
             
-                animator.SetInteger("SUPERESTADO", 2);
+               // animator.SetInteger("SUPERESTADO", 2);
             }
             else
             {
