@@ -23,7 +23,7 @@ public class Jugador : MonoBehaviour
 
     public Estadísticas est;
 
-    private float segundosCooldownEnergía = 0;
+    [System.NonSerialized] public float segundosCooldownEnergía = 0;
     private float segundosCooldownDisparo = 0;
 
     public GameObject menuPausa;
@@ -41,62 +41,65 @@ public class Jugador : MonoBehaviour
     {
         // Movimiento
 
-        tocaPiso = Physics.CheckSphere(checkPiso.position, distanciaPiso, capaPiso);
+            // Saber si toca el piso o no
 
-        if (tocaPiso && direccion.y < 0)
-        {
-            direccion.y = -2f;
-        }
+            tocaPiso = Physics.CheckSphere(checkPiso.position, distanciaPiso, capaPiso);
 
-
-        /*
-        if (Input.GetButtonDown("Jump") && tocaPiso)
-        {
-            direccion.y = Mathf.Sqrt(3 * -2 * gravedad);
-        }*/
-
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-
-        Vector3 mover = transform.right * x + transform.forward * z;
-        CharCont.Move(mover * est.velocidadJ * Time.deltaTime);
-
-        if ((x != 0 || z != 0) && est.velocidadJ == 3)
-        {
-            animator.SetInteger("SUPERESTADO", 1);
-        }
-        else if (x == 0 && z == 0)
-        {
-            animator.SetInteger("SUPERESTADO", 0);
-        }
-
-
-        direccion.y += gravedad * Time.deltaTime;
-        CharCont.Move(direccion * Time.deltaTime);
-
-        // Correr
-
-        segundosCooldownEnergía += Time.deltaTime;
-
-        if (Input.GetKey(KeyCode.LeftShift) && est.energíaJ > 0)
-        {
-            est.velocidadJ = velocidadInicial * 2;
-            segundosCooldownEnergía = 0;
-            est.energíaJ -= .33f;
-            
-            animator.SetInteger("SUPERESTADO", 2);
-        }
-        else //if (est.energíaJ <= 0)
-        {
-            est.velocidadJ = velocidadInicial;
-
-            if (segundosCooldownEnergía >= est.cooldownEnergíaJ)
+            if (tocaPiso && direccion.y < 0)
             {
-                est.energíaJ += .175f;
+                direccion.y = -2f;
             }
 
-           // animator.SetInteger("SUPERESTADO", 0);
-        }
+            // Salto
+
+            /*if (Input.GetButtonDown("Jump") && tocaPiso)
+            {
+                direccion.y = Mathf.Sqrt(3 * -2 * gravedad);
+            }*/
+
+            // Movimiento basico - Caminar
+
+            float x = Input.GetAxis("Horizontal");
+            float z = Input.GetAxis("Vertical");
+
+            Vector3 mover = transform.right * x + transform.forward * z;
+            CharCont.Move(mover * est.velocidadJ * Time.deltaTime);
+
+            direccion.y += gravedad * Time.deltaTime;
+            CharCont.Move(direccion * Time.deltaTime);
+
+                // Animaciones
+
+                if ((x != 0 || z != 0) && est.velocidadJ == 3)
+                {
+                    animator.SetInteger("SUPERESTADO", 1);
+                }
+                else if (x == 0 && z == 0)
+                {
+                    animator.SetInteger("SUPERESTADO", 0);
+                }
+
+            // Correr
+
+            segundosCooldownEnergía += Time.deltaTime;
+
+            if (Input.GetKey(KeyCode.LeftShift) && est.energíaJ > 0)
+            {
+                est.velocidadJ = velocidadInicial * 2;
+                segundosCooldownEnergía = 0;
+                est.energíaJ -= .33f;
+            
+                animator.SetInteger("SUPERESTADO", 2);
+            }
+            else
+            {
+                est.velocidadJ = velocidadInicial;
+
+                if (segundosCooldownEnergía >= est.cooldownEnergíaJ)
+                {
+                    est.energíaJ += .175f;
+                }
+            }
 
         // Limitar estadísticas
 
@@ -140,7 +143,7 @@ public class Jugador : MonoBehaviour
             }
         }
 
-        // Pausar
+        // Pausar el juego
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {

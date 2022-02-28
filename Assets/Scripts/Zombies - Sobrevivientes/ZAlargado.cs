@@ -8,6 +8,6 @@ public class ZAlargado : Zombie
     {
         agente.speed *= velocidadZ * 0.75f;
         vidaZ *= 0.75f;
-        rangoZ *= 1.5f;
+        rangoZ *= 1.75f;
     }
 }

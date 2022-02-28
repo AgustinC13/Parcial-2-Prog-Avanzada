@@ -28,6 +28,10 @@ public class Estadísticas : MonoBehaviour
     public float rangoZ;
     public float cooldownAtaqueZ;
 
+    [Header("Estadísticas base de los Sobrevivientes")]
+    public float velocidadS;
+    public float rangoS;
+
     void Start()
     {
         
