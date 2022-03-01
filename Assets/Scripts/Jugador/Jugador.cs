@@ -121,7 +121,7 @@ public class Jugador : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && segundosCooldownDisparo >= est.cooldownAtaqueJ)
         {
-            segundosCooldownDisparo = 0;
+            segundosCooldownDisparo = 3;
 
             if (Physics.Raycast(Camara.gameObject.transform.position, Camara.gameObject.transform.TransformDirection(Vector3.forward), out hit, est.rangoJ, capaEnemigos))
             {
