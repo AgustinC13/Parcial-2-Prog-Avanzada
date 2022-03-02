@@ -81,4 +81,17 @@ public class Sobreviviente : MonoBehaviour
                 velocidadS = velocidadOriginal;
             }
     }
+
+    // Al entrar en contacto con un trigger
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // Cuando el trigger es la salida
+
+        if (other.gameObject.layer == 9)
+        {
+            est.sobrevivientesRestantes -= 1;
+            Destroy(gameObject);
+        }
+    }
 }

@@ -132,12 +132,12 @@ public class Jugador : MonoBehaviour
 
                 if (hit.transform.GetComponent<Zombie>().vidaZ <= 0)
                 {
+                    est.zombiesVivos -= 1;
                     Destroy(hit.transform.gameObject);
                 }
             }
             else
             {
-
                 Debug.DrawRay(Camara.gameObject.transform.position, Camara.gameObject.transform.TransformDirection(Vector3.forward) * 1000, Color.white);
                 Debug.Log("Golpeo otra cosa");
             }
