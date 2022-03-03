@@ -1,19 +1,16 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Zombie : MonoBehaviour
 {
     public NavMeshAgent agente;
-    public Transform jugador;
     public Animator animator;
     public FieldOfView fovLejos;
     public FieldOfView fovCerca;
     public FieldOfView fovJugDetectado;
 
-    public Estadísticas est;
+    private Transform jugador;
+    private Estadísticas est;
 
     [System.NonSerialized] public float vidaZ;
     [System.NonSerialized] public float velocidadZ;
@@ -25,6 +22,9 @@ public class Zombie : MonoBehaviour
 
     private void Awake()
     {
+        jugador = GameObject.Find("Jugador").GetComponent<Transform>();
+        est = GameObject.Find("Game Manager").GetComponent<Estadísticas>();
+
         vidaZ = est.vidaZ;
         velocidadZ = est.velocidadZ;
         dañoZ = est.dañoZ;

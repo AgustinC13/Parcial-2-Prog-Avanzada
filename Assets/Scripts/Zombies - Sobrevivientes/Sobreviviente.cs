@@ -1,15 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Sobreviviente : MonoBehaviour
 {
     public NavMeshAgent agente;
-    public Transform jugador;
     public Animator animator;
 
-    public Estadísticas est;
+    private Transform jugador;
+    private Estadísticas est;
+    private Jugador scriptJugador;
 
     [System.NonSerialized] public float velocidadS;
     [System.NonSerialized] public float rangoS;
@@ -19,6 +18,10 @@ public class Sobreviviente : MonoBehaviour
 
     public void Awake()
     {
+        jugador = GameObject.Find("Jugador").GetComponent<Transform>();
+        est = GameObject.Find("Game Manager").GetComponent<Estadísticas>();
+        scriptJugador = jugador.gameObject.GetComponent<Jugador>();
+
         velocidadS = est.velocidadS;
         rangoS = est.rangoS;
 
@@ -57,9 +60,11 @@ public class Sobreviviente : MonoBehaviour
 
             // En movimiento
 
-            if (distancia <= rangoS && Input.GetKeyDown(KeyCode.E))
+            if (distancia <= rangoS && Input.GetKeyDown(KeyCode.E) && scriptJugador.rescatando == false)
             {
                 siendoRescatado = true;
+
+                jugador.gameObject.GetComponent<Jugador>().rescatando = true;
             }
 
             if (siendoRescatado == true && distancia > rangoS)
@@ -68,17 +73,6 @@ public class Sobreviviente : MonoBehaviour
                 agente.speed = velocidadOriginal;
 
                 animator.SetInteger("SUPERESTADO", 1);
-            }
-
-            jugador.GetComponent<Jugador>().segundosCooldownEnergía += Time.deltaTime;
-
-            if (Input.GetKey(KeyCode.LeftShift) && est.energíaJ > 0)
-            {
-                velocidadS = velocidadOriginal * 2;
-            }
-            else
-            {
-                velocidadS = velocidadOriginal;
             }
     }
 
@@ -90,6 +84,7 @@ public class Sobreviviente : MonoBehaviour
 
         if (other.gameObject.layer == 9)
         {
+            scriptJugador.rescatando = false;
             est.sobrevivientesRestantes -= 1;
             Destroy(gameObject);
         }

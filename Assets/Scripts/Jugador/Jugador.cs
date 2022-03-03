@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +8,6 @@ public class Jugador : MonoBehaviour
     public Camera Camara;
     public Animator animator;
 
-    private float velocidadInicial;
-    private float energíaInicial;
     public float gravedad = -9.81f;
     public Vector3 direccion;
 
@@ -23,7 +19,14 @@ public class Jugador : MonoBehaviour
 
     public Estadísticas est;
 
-    [System.NonSerialized] public float segundosCooldownEnergía = 0;
+    private float velocidadInicial;
+    private float energíaInicial;
+    private float municionInicial;
+
+    private bool puedeRecargar = true;
+    [System.NonSerialized] public bool rescatando = false;
+
+    private float segundosCooldownEnergía = 0;
     private float segundosCooldownDisparo = 0;
 
     public GameObject menuPausa;
@@ -32,6 +35,7 @@ public class Jugador : MonoBehaviour
     {
         velocidadInicial = est.velocidadJ;
         energíaInicial = est.energíaJ;
+        municionInicial = est.municionJ;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -70,11 +74,11 @@ public class Jugador : MonoBehaviour
 
                 // Animaciones
 
-                if ((x != 0 || z != 0) && est.velocidadJ == 3)
+                if ((x != 0 || z != 0) && est.velocidadJ == 3 && animator.GetInteger("SUPERESTADO") != 3)
                 {
                     animator.SetInteger("SUPERESTADO", 1);
                 }
-                else if (x == 0 && z == 0)
+                else if (x == 0 && z == 0 && animator.GetInteger("SUPERESTADO") != 3)
                 {
                     animator.SetInteger("SUPERESTADO", 0);
                 }
@@ -83,7 +87,7 @@ public class Jugador : MonoBehaviour
 
             segundosCooldownEnergía += Time.deltaTime;
 
-            if (Input.GetKey(KeyCode.LeftShift) && est.energíaJ > 0)
+            if (Input.GetKey(KeyCode.LeftShift) && est.energíaJ > 0 && animator.GetInteger("SUPERESTADO") != 3)
             {
                 est.velocidadJ = velocidadInicial * 2;
                 segundosCooldownEnergía = 0;
@@ -119,9 +123,16 @@ public class Jugador : MonoBehaviour
 
         segundosCooldownDisparo += Time.deltaTime;
 
-        if (Input.GetMouseButtonDown(0) && segundosCooldownDisparo >= est.cooldownAtaqueJ)
+        if (Input.GetMouseButtonDown(0) && segundosCooldownDisparo >= est.cooldownAtaqueJ && est.municionJ > 0 && puedeRecargar == true)
         {
-            segundosCooldownDisparo = 3;
+            segundosCooldownDisparo = 0;
+
+            est.municionJ -= 1;
+
+            animator.SetInteger("SUPERESTADO", 3);
+
+            CharCont.enabled = false;
+            this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
 
             if (Physics.Raycast(Camara.gameObject.transform.position, Camara.gameObject.transform.TransformDirection(Vector3.forward), out hit, est.rangoJ, capaEnemigos))
             {
@@ -143,11 +154,31 @@ public class Jugador : MonoBehaviour
             }
         }
 
+        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+        {
+            CharCont.enabled = true;
+            this.gameObject.GetComponent<Rigidbody>().isKinematic = false;
+
+            animator.SetInteger("SUPERESTADO", 0);
+        }
+
+        // Recargar munición
+
+        if (Input.GetKeyDown(KeyCode.R) && puedeRecargar && animator.GetInteger("SUPERESTADO") != 3)
+        {
+            puedeRecargar = false;
+
+            CharCont.enabled = false;
+            this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+
+            StartCoroutine(Recarga());
+        }
+
         // Pausar el juego
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            MenuPausaDerrota();
+            MenuPausaDerrotaVictoria();
 
             menuPausa.transform.GetChild(0).GetComponent<Text>().text = "Pausa";
         }
@@ -156,19 +187,36 @@ public class Jugador : MonoBehaviour
 
         if (est.vidaJ <= 0)
         {
-            MenuPausaDerrota();
+            MenuPausaDerrotaVictoria();
 
             menuPausa.transform.GetChild(0).GetComponent<Text>().text = "Te han matado...";
 
-            menuPausa.transform.GetChild(1).gameObject.SetActive(false);
-            menuPausa.transform.GetChild(2).GetComponent<RectTransform>().position = new Vector2(960, 540);
-            menuPausa.transform.GetChild(3).GetComponent<RectTransform>().position = new Vector2(960, 360);
+            eliminarDespausar();
+        }
+        else if (est.tiempoRestante <= 0)
+        {
+            MenuPausaDerrotaVictoria();
+
+            menuPausa.transform.GetChild(0).GetComponent<Text>().text = "Se acabó el tiempo";
+
+            eliminarDespausar();
+        }
+
+        // Ganar
+
+        if (est.sobrevivientesRestantes == 0)
+        {
+            MenuPausaDerrotaVictoria();
+
+            menuPausa.transform.GetChild(0).GetComponent<Text>().text = "¡Has ganado!";
+
+            eliminarDespausar();
         }
     }
 
     // Menu al pausar o perder
 
-    void MenuPausaDerrota()
+    void MenuPausaDerrotaVictoria()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -178,5 +226,28 @@ public class Jugador : MonoBehaviour
         Time.timeScale = 0;
 
         this.enabled = false;
+    }
+
+    // Eliminar el boton de despausar para los menús de derrota y victoria
+
+    void eliminarDespausar()
+    {
+        menuPausa.transform.GetChild(1).gameObject.SetActive(false);
+        menuPausa.transform.GetChild(2).GetComponent<RectTransform>().position = new Vector2(960, 540);
+        menuPausa.transform.GetChild(3).GetComponent<RectTransform>().position = new Vector2(960, 360);
+    }
+
+    // Esperar al recargar municion
+
+    IEnumerator Recarga()
+    {
+        yield return new WaitForSeconds(est.tiempoRecargaJ);
+
+        puedeRecargar = true;
+
+        CharCont.enabled = true;
+        this.gameObject.GetComponent<Rigidbody>().isKinematic = false;
+
+        est.municionJ = municionInicial;
     }
 }
